@@ -1,6 +1,4 @@
-# README — Restaurant Service (GitHub Version)
-
-Bu README sənədi `RestaurantImpl` servisi üçün GitHub layihəsi üçün uyğun formatda hazırlanıb. Servis `Restaurant` məlumatlarını yaratmaq, oxumaq və cache vasitəsilə sürətlə təmin etmək üçün hazırlanıb. Kafka event göndərmə və Redis cache inteqrasiyası mövcuddur.
+# README — Restaurant Service 
 
 ---
 
