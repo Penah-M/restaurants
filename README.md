@@ -1,132 +1,118 @@
-README — Restaurant Service (GitHub Version)
+# README — Restaurant Service (GitHub Version)
 
-Bu README sənədi RestaurantImpl servisi üçün GitHub layihəsi üçün uyğun formatda hazırlanıb. Servis Restaurant məlumatlarını yaratmaq, oxumaq və cache vasitəsilə sürətlə təmin etmək üçün hazırlanıb. Kafka event göndərmə və Redis cache inteqrasiyası mövcuddur.
+Bu README sənədi `RestaurantImpl` servisi üçün GitHub layihəsi üçün uyğun formatda hazırlanıb. Servis `Restaurant` məlumatlarını yaratmaq, oxumaq və cache vasitəsilə sürətlə təmin etmək üçün hazırlanıb. Kafka event göndərmə və Redis cache inteqrasiyası mövcuddur.
 
-Table of Contents
+---
 
-Məqsəd
+## Table of Contents
 
-Servis Sinifi
+1. [Məqsəd](#məqsəd)
+2. [Servis Sinifi](#servis-sinifi)
+3. [Əsas Metodlar](#əsas-metodlar)
 
-Əsas Metodlar
+    * [save](#save)
+    * [findById](#findbyid)
+    * [findAll](#findall)
+    * [mapToResponse](#maptoresponse)
+4. [Cache və Kafka Integrasiyası](#cache-və-kafka-integrasiyası)
+5. [Logging](#logging)
+6. [Tövsiyələr](#tövsiyələr)
 
-save
+---
 
-findById
+## Məqsəd
 
-findAll
+`RestaurantImpl` servisi aşağıdakı funksiyaları təmin edir:
 
-mapToResponse
+* Məlumat əlavə etmək (`save`)
+* ID üzrə məlumat əldə etmək (`findById`)
+* Bütün məlumatları əldə etmək (`findAll`)
+* Redis cache istifadə edərək performansı artırmaq
+* Kafka ilə event göndərmək
 
-Cache və Kafka Integrasiyası
+---
 
-Logging
+## Servis Sinifi
 
-Tövsiyələr
+`RestaurantImpl` sinifi `RestaurantService` interfeysini implement edir və aşağıdakı komponentləri istifadə edir:
 
-Məqsəd
+* `RestaurantRepository` — JPA vasitəsilə database əməliyyatları
+* `CacheUtil` — Redis cache üçün util sinifi
+* `KafkaTemplate<String, RestaurantEvent>` — Kafka event göndərmə
 
-RestaurantImpl servisi aşağıdakı funksiyaları təmin edir:
+### Annotasiyalar
 
-Məlumat əlavə etmək (save)
+* `@Service` — Spring service komponenti
+* `@RequiredArgsConstructor` — `final` sahələr üçün avtomatik konstruktor
+* `@FieldDefaults(level = PRIVATE, makeFinal = true)` — sahələri `private final` edir
 
-ID üzrə məlumat əldə etmək (findById)
+---
 
-Bütün məlumatları əldə etmək (findAll)
+## Əsas Metodlar
 
-Redis cache istifadə edərək performansı artırmaq
+### save(RestaurantRequest request)
 
-Kafka ilə event göndərmək
+* Yeni `RestaurantEntity` yaradır və database-ə saxlayır
+* Kafka event göndərir (`RestaurantEvent`) — mövzu: `restaurant`
+* Redis cache-ə yazır (10 dəqiqə müddətinə)
+* `RestaurantResponse` qaytarır
 
-Servis Sinifi
+### findById(Long id)
 
-RestaurantImpl sinifi RestaurantService interfeysini implement edir və aşağıdakı komponentləri istifadə edir:
+* Redis cache-dən əvvəlcə oxuyur
+* Əgər cache boşdursa, database-dən oxuyur və cache-ə yazır
+* `RestaurantResponse` qaytarır
 
-RestaurantRepository — JPA vasitəsilə database əməliyyatları
+### findAll()
 
-CacheUtil — Redis cache üçün util sinifi
+* Redis cache-dən bütün məlumatları oxuyur
+* Əgər cache boşdursa, database-dən oxuyur və cache-ə yazır
+* `List<RestaurantResponse>` qaytarır
 
-KafkaTemplate<String, RestaurantEvent> — Kafka event göndərmə
+### mapToResponse(RestaurantEntity entity)
 
-Annotasiyalar
+* `RestaurantEntity`-ni `RestaurantResponse`-ə çevirir
 
-@Service — Spring service komponenti
+---
 
-@RequiredArgsConstructor — final sahələr üçün avtomatik konstruktor
+## Cache və Kafka Integrasiyası
 
-@FieldDefaults(level = PRIVATE, makeFinal = true) — sahələri private final edir
+### Redis Cache
 
-Əsas Metodlar
-save(RestaurantRequest request)
+* `CacheUtil` sinifi Redis ilə əlaqəni təmin edir
+* `saveRestaurant(id, entity, 10L, ChronoUnit.MINUTES)` — məlumatı 10 dəqiqə cache-də saxlayır
+* `getRestaurant(id)` və `getAllRestaurants()` — cache-dən məlumatı oxumaq üçün
 
-Yeni RestaurantEntity yaradır və database-ə saxlayır
+### Kafka Event
 
-Kafka event göndərir (RestaurantEvent) — mövzu: restaurant
+* Kafka mövzusu: `restaurant`
+* Event tipi: `RestaurantEvent`
+* Göndərmə nümunəsi:
 
-Redis cache-ə yazır (10 dəqiqə müddətinə)
-
-RestaurantResponse qaytarır
-
-findById(Long id)
-
-Redis cache-dən əvvəlcə oxuyur
-
-Əgər cache boşdursa, database-dən oxuyur və cache-ə yazır
-
-RestaurantResponse qaytarır
-
-findAll()
-
-Redis cache-dən bütün məlumatları oxuyur
-
-Əgər cache boşdursa, database-dən oxuyur və cache-ə yazır
-
-List<RestaurantResponse> qaytarır
-
-mapToResponse(RestaurantEntity entity)
-
-RestaurantEntity-ni RestaurantResponse-ə çevirir
-
-Cache və Kafka Integrasiyası
-Redis Cache
-
-CacheUtil sinifi Redis ilə əlaqəni təmin edir
-
-saveRestaurant(id, entity, 10L, ChronoUnit.MINUTES) — məlumatı 10 dəqiqə cache-də saxlayır
-
-getRestaurant(id) və getAllRestaurants() — cache-dən məlumatı oxumaq üçün
-
-Kafka Event
-
-Kafka mövzusu: restaurant
-
-Event tipi: RestaurantEvent
-
-Göndərmə nümunəsi:
-
+```java
 RestaurantEvent event = RestaurantEvent.builder()
-.name(restaurantEntity.getName())
-.address(restaurantEntity.getAddress())
-.build();
+    .name(restaurantEntity.getName())
+    .address(restaurantEntity.getAddress())
+    .build();
 
+//kafkaTemplate.send("restaurant", event);
+```
 
-kafkaTemplate.send("restaurant", event);
-Logging
+---
 
-Redisdən oxunduqda və databazadan oxunduqda konsolda mesaj çap edilir:
+## Logging
 
-"Redisden oxunur melumat.."
+* Redisdən oxunduqda və databazadan oxunduqda konsolda mesaj çap edilir:
 
-"DATA BAZADAN oxuyub cache yazildi"
+    * "Redisden oxunur melumat.."
+    * "DATA BAZADAN oxuyub cache yazildi"
 
-Tövsiyələr
+---
 
-Cache müddəti və CronJob-lar layihənizə görə tənzimlənə bilər
+## Tövsiyələr
 
-Kafka event listener-lər əlavə edərək async mesajlar işləyə bilər
+* Cache müddəti və CronJob-lar layihənizə görə tənzimlənə bilər
+* Kafka event listener-lər əlavə edərək async mesajlar işləyə bilər
+* Redis və Kafka konfigurasiya parametrlərini `application.yml` və ya `application.properties`-də saxlayın
+* Service metodları üçün proper exception handling (`NotFoundException`) mövcuddur
 
-Redis və Kafka konfigurasiya parametrlərini application.yml və ya application.properties-də saxlayın
-
-Service metodları üçün proper exception handling (NotFoundException) mövcuddur
-
-Bu README, GitHub layihəsi üçün formatlaşdırılıb və layihəni başa düşmək, servis metodlarından düzgün istifadə etmək üçün əsas məlumatları ehtiva edir.
