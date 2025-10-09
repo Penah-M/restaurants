@@ -3,6 +3,7 @@ package com.example.ms.controller;
 import com.example.ms.dto.request.RestaurantRequest;
 import com.example.ms.dto.response.RestaurantResponse;
 import com.example.ms.service.abstraction.RestaurantService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +19,12 @@ public class RestaurantController {
     RestaurantService restaurantService;
 
     @PostMapping()
-    RestaurantResponse save(@RequestBody RestaurantRequest request){
+    RestaurantResponse save(@Valid @RequestBody RestaurantRequest request){
         return restaurantService.save(request);
     }
 
     @GetMapping("{id}/find")
-    RestaurantResponse findById(@PathVariable Long id){
+    RestaurantResponse findById(@Valid @PathVariable Long id){
         return restaurantService.findById(id);
     }
 

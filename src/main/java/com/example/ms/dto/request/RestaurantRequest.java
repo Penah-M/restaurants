@@ -1,6 +1,8 @@
 package com.example.ms.dto.request;
 
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +16,10 @@ import static lombok.AccessLevel.PRIVATE;
 @Data
 public class RestaurantRequest {
 
+
+    @NotBlank(message = "Bos ola bilmez")
     String name;
 
+    @NotBlank(message = "Bos ola bilmez")
     String address;
 }
