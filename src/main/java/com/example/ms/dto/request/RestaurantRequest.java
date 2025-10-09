@@ -18,6 +18,6 @@ public class RestaurantRequest {
     @NotBlank(message = "Bos ola bilmez")
     String name;
 
-    @NotBlank(message = "Bos ola bilmez")
+    @NotBlank(message = "Bos ola bilmez ")
     String address;
 }
