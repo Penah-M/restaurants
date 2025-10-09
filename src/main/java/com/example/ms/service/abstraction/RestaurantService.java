@@ -2,7 +2,6 @@ package com.example.ms.service.abstraction;
 
 import com.example.ms.dto.request.RestaurantRequest;
 import com.example.ms.dto.response.RestaurantResponse;
-
 import java.util.List;
 
 public interface RestaurantService {

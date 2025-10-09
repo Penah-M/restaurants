@@ -2,14 +2,19 @@ package com.example.ms.dto.response;
 
 
 import com.example.ms.enums.RestaurantStatus;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
+import static lombok.AccessLevel.PRIVATE;
+
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = PRIVATE)
 @Data
 @Builder
 public class RestaurantResponse {
